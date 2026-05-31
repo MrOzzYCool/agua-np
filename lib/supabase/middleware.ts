@@ -1,54 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import {
-  getSubsystemFromPath,
-  getRoleForSubsystem,
-  SUBSYSTEM_PERMISSIONS,
-  type Subsystem,
-} from "@/lib/utils/roles";
 
 // Rutas públicas que no requieren autenticación
 const PUBLIC_ROUTES = ["/", "/login", "/pagar", "/acceso-denegado"];
 
-// Rutas permitidas por rol DENTRO de cada subsistema
-const YAKU_ROLE_ROUTES: Record<string, string[]> = {
-  tecnico: ["/yaku", "/yaku/dashboard", "/yaku/dashboard/socios"],
-  cobrador: ["/yaku", "/yaku/dashboard", "/yaku/dashboard/pagos"],
-  administrador: ["*"],
-};
-
-const CEMENTERIO_ROLE_ROUTES: Record<string, string[]> = {
-  cobrador: ["/cementerio", "/cementerio/dashboard", "/cementerio/dashboard/ventas"],
-  administrador: ["*"],
-};
-
-const ALQUILERES_ROLE_ROUTES: Record<string, string[]> = {
-  cobrador: ["/alquileres", "/alquileres/dashboard", "/alquileres/dashboard/reservas"],
-  administrador: ["*"],
-};
-
-const SUBSYSTEM_ROUTE_MAP: Record<Subsystem, Record<string, string[]>> = {
-  yaku: YAKU_ROLE_ROUTES,
-  cementerio: CEMENTERIO_ROLE_ROUTES,
-  alquileres: ALQUILERES_ROLE_ROUTES,
-};
-
 function isPublicRoute(pathname: string): boolean {
   return PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
-  );
-}
-
-function isSubsystemRouteAllowed(
-  pathname: string,
-  rol: string,
-  subsystem: Subsystem
-): boolean {
-  const routeMap = SUBSYSTEM_ROUTE_MAP[subsystem];
-  const allowed = routeMap[rol];
-  if (!allowed) return false;
-  if (allowed.includes("*")) return true;
-  return allowed.some(
     (route) => pathname === route || pathname.startsWith(route + "/")
   );
 }
@@ -94,51 +51,12 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Si no hay sesión → login
   if (!user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Detectar subsistema
-  const subsystem = getSubsystemFromPath(pathname);
-  if (!subsystem) {
-    // Ruta no pertenece a ningún subsistema protegido (ej: /dashboard legacy) — permitir si está autenticado
-    return supabaseResponse;
-  }
-
-  // Obtener perfil con roles JSONB + rol legacy
-  // Si falla la consulta (ej: columna roles no existe aún), usar fallback
-  let rol: string | null = "administrador";
-  try {
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("rol, roles")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (!profileError && profile) {
-      rol = getRoleForSubsystem(profile, subsystem) ?? profile?.rol ?? "administrador";
-    } else {
-      // Si hay error (columna no existe, etc), intentar solo con 'rol'
-      const { data: fallbackProfile } = await supabase
-        .from("profiles")
-        .select("rol")
-        .eq("id", user.id)
-        .maybeSingle();
-      rol = fallbackProfile?.rol ?? "administrador";
-    }
-  } catch {
-    rol = "administrador";
-  }
-
-  // Verificar acceso al subsistema
-  if (!rol || !SUBSYSTEM_PERMISSIONS[subsystem].includes(rol)) {
-    return NextResponse.redirect(new URL("/acceso-denegado", request.url));
-  }
-
-  // Verificar ruta específica dentro del subsistema
-  if (!isSubsystemRouteAllowed(pathname, rol, subsystem)) {
-    return NextResponse.redirect(new URL("/acceso-denegado", request.url));
-  }
-
+  // Usuario autenticado → permitir acceso a todos los subsistemas
+  // La verificación granular de roles se implementará después
   return supabaseResponse;
 }

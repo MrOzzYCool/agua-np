@@ -29,7 +29,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/");
     router.refresh();
   }
 
@@ -42,14 +42,14 @@ export default function LoginPage() {
             <div className="mx-auto w-20 h-20 bg-sky-500 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-sky-200">
               <Droplets className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-4xl font-extrabold text-sky-500 tracking-tight">
-              YAKU
+            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
+              Portal Integral
             </h1>
             <p className="text-sm text-slate-600 mt-1 font-medium">
-              Sistema Integral de Agua
+              Asociación AAHH Nicolás de Piérola
             </p>
             <p className="text-xs text-slate-500 mt-0.5">
-              Asociación AAHH Nicolás de Piérola
+              YAKU · Cementerio · Alquileres
             </p>
           </div>
 
