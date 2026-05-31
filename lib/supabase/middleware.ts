@@ -122,7 +122,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Verificar acceso al subsistema
-  if (!SUBSYSTEM_PERMISSIONS[subsystem].includes(rol)) {
+  if (!rol || !SUBSYSTEM_PERMISSIONS[subsystem].includes(rol)) {
     return NextResponse.redirect(new URL("/acceso-denegado", request.url));
   }
 
