@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YAKU — Sistema Integral de Agua",
-  description: "Sistema de gestión de cobranza de agua — Asociación AAHH Nicolás de Piérola",
+  title: "Portal Integral — Asociación AAHH Nicolás de Piérola",
+  description: "Portal Integral: YAKU (Agua), Cementerio y Alquileres — Asociación AAHH Nicolás de Piérola",
 };
 
 export default function RootLayout({
