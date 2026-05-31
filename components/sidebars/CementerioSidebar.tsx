@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import {
   LayoutDashboard, MapPin, FileText, LogOut, Landmark, Home,
 } from "lucide-react";
@@ -20,13 +19,10 @@ type Props = { rol: string; nombreUsuario: string };
 export default function CementerioSidebar({ rol, nombreUsuario }: Props) {
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
   const visibleItems = navItems.filter((item) => item.roles.includes(rol));
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
     router.push("/");
-    router.refresh();
   }
 
   return (
@@ -69,7 +65,7 @@ export default function CementerioSidebar({ rol, nombreUsuario }: Props) {
         <p className="text-[10px] text-slate-600 mb-3 px-4 capitalize">{rol}</p>
         <button onClick={handleSignOut}
           className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-red-500/15 hover:text-red-400 transition w-full">
-          <LogOut className="w-5 h-5" /> Cerrar sesión
+          <LogOut className="w-5 h-5" /> Volver al Portal
         </button>
       </div>
     </aside>
