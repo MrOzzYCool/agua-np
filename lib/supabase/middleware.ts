@@ -109,15 +109,24 @@ export async function updateSession(request: NextRequest) {
   // Si falla la consulta (ej: columna roles no existe aún), usar fallback
   let rol: string | null = "administrador";
   try {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("rol, roles")
       .eq("id", user.id)
       .maybeSingle();
 
-    rol = getRoleForSubsystem(profile, subsystem) ?? profile?.rol ?? "administrador";
+    if (!profileError && profile) {
+      rol = getRoleForSubsystem(profile, subsystem) ?? profile?.rol ?? "administrador";
+    } else {
+      // Si hay error (columna no existe, etc), intentar solo con 'rol'
+      const { data: fallbackProfile } = await supabase
+        .from("profiles")
+        .select("rol")
+        .eq("id", user.id)
+        .maybeSingle();
+      rol = fallbackProfile?.rol ?? "administrador";
+    }
   } catch {
-    // Si hay error de conexión o columna no existe, permitir acceso como admin
     rol = "administrador";
   }
 

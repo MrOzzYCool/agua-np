@@ -12,14 +12,21 @@ export default async function AlquileresLayout({
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("nombre_completo, rol, roles")
-    .eq("id", user.id)
-    .maybeSingle();
+  let rol = "administrador";
+  let nombreUsuario = user.email ?? "Usuario";
 
-  const rol = getRoleForSubsystem(profile, "alquileres") ?? profile?.rol ?? "administrador";
-  const nombreUsuario = profile?.nombre_completo ?? user.email ?? "Usuario";
+  try {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("nombre_completo, rol, roles")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    rol = getRoleForSubsystem(profile, "alquileres") ?? profile?.rol ?? "administrador";
+    nombreUsuario = profile?.nombre_completo ?? user.email ?? "Usuario";
+  } catch {
+    // Si falla la query, usar defaults
+  }
 
   return (
     <div className="flex min-h-screen bg-slate-50">
