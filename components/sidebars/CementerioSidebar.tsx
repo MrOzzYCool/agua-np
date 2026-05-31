@@ -25,7 +25,7 @@ export default function CementerioSidebar({ rol, nombreUsuario }: Props) {
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/");
     router.refresh();
   }
 
