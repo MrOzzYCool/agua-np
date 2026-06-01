@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Droplets, Landmark, Building2 } from "lucide-react";
+import { Droplets, Landmark, Building2, UserCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 const subsystems = [
@@ -34,6 +34,16 @@ const subsystems = [
     shadowClass: "shadow-emerald-500/20",
     hoverClass: "hover:border-emerald-300 hover:shadow-emerald-100",
   },
+  {
+    href: "/asociados/dashboard",
+    title: "Asociados",
+    subtitle: "Inscripción de Asociados",
+    description: "Registro e inscripción de asociados de la Asociación AAHH Nicolás de Piérola.",
+    icon: UserCheck,
+    bgClass: "bg-violet-500",
+    shadowClass: "shadow-violet-500/20",
+    hoverClass: "hover:border-violet-300 hover:shadow-violet-100",
+  },
 ];
 
 export default async function HomePage() {
@@ -57,7 +67,7 @@ export default async function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {subsystems.map((s) => {
             const Icon = s.icon;
             return (

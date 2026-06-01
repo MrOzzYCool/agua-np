@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Droplets, Landmark, Building2 } from "lucide-react";
+import { Droplets, Landmark, Building2, UserCheck } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -49,6 +49,9 @@ export default function LoginPage() {
               <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center shadow-md shadow-emerald-200">
                 <Building2 className="w-5 h-5 text-white" />
               </div>
+              <div className="w-10 h-10 bg-violet-500 rounded-lg flex items-center justify-center shadow-md shadow-violet-200">
+                <UserCheck className="w-5 h-5 text-white" />
+              </div>
             </div>
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
               Portal Integral
@@ -57,7 +60,7 @@ export default function LoginPage() {
               Asociación AAHH Nicolás de Piérola
             </p>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              Agua · Cementerio · Alquileres
+              Agua · Cementerio · Alquileres · Asociados
             </p>
           </div>
 
